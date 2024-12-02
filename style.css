@@ -1,0 +1,28 @@
+body {
+    background: #f8f9fa;
+    font-family: 'Arial', sans-serif;
+}
+
+h1 {
+    color: #007bff;
+}
+
+#resume-preview h2 {
+    color: #333;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+hr {
+    border: 1px solid #ddd;
+}
+
+#resume-preview p {
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+button:hover {
+    background-color: #0056b3 !important;
+    transition: all 0.3s ease-in-out;
+}

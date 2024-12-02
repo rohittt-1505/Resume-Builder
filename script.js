@@ -1,60 +1,60 @@
-// Initialize EmailJS (Replace YOUR_USER_ID with your EmailJS User ID)
-emailjs.init("rohitrathod2815@gmail.com");
+// Global variable to hold the generated PDF instance
+let pdfDoc = null;
 
-function generateAndSendResume() {
-    const fullName = document.getElementById("fullName").value;
-    const email = document.getElementById("email").value;
-    const phone = document.getElementById("phone").value;
-    const education = document.getElementById("education").value;
-    const school = document.getElementById("school").value;
-    const workExperience = document.getElementById("workExperience").value;
-    const skills = document.getElementById("skills").value;
+// Function to generate the resume as a PDF
+document.getElementById("generateBtn").addEventListener("click", function () {
+    const { jsPDF } = window.jspdf; // Get jsPDF instance
+    const doc = new jsPDF();
 
-    // Validate inputs
-    if (!fullName || !email || !phone) {
-        alert("Please fill out all required fields (Name, Email, and Phone).");
+    // Fetch user input
+    const fullName = document.getElementById("fullName").value || "N/A";
+    const email = document.getElementById("email").value || "N/A";
+    const phone = document.getElementById("phone").value || "N/A";
+    const education = document.getElementById("education").value || "N/A";
+    const school = document.getElementById("school").value || "N/A";
+    const workExperience = document.getElementById("workExperience").value || "N/A";
+    const skills = document.getElementById("skills").value || "N/A";
+
+    // Add content to the PDF
+    doc.setFontSize(16);
+    doc.text("Resume", 10, 10);
+
+    doc.setFontSize(12);
+    doc.text("Full Name: " + fullName, 10, 20);
+    doc.text("Email: " + email, 10, 30);
+    doc.text("Phone: " + phone, 10, 40);
+    doc.text("Education: " + education, 10, 50);
+    doc.text("University/College: " + school, 10, 60);
+    doc.text("Work Experience: ", 10, 70);
+    doc.text(workExperience, 10, 80, { maxWidth: 180 });
+    doc.text("Skills: " + skills, 10, 100);
+
+    // Save the generated PDF in the global variable
+    pdfDoc = doc;
+
+    alert("Resume generated successfully!");
+});
+
+// Function to preview the PDF in a new tab
+document.getElementById("previewBtn").addEventListener("click", function () {
+    if (!pdfDoc) {
+        alert("Please generate the resume first!");
         return;
     }
 
-    // Generate PDF using jsPDF
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF();
+    // Open PDF in a new tab
+    const pdfBlob = pdfDoc.output("blob");
+    const url = URL.createObjectURL(pdfBlob);
+    window.open(url, "_blank");
+});
 
-    pdf.setFontSize(16);
-    pdf.text("Resume", 105, 10, { align: "center" });
-    pdf.setFontSize(12);
-    pdf.text(`Name: ${fullName}`, 10, 20);
-    pdf.text(`Email: ${email}`, 10, 30);
-    pdf.text(`Phone: ${phone}`, 10, 40);
-    pdf.text(`Education: ${education || "N/A"}`, 10, 50);
-    pdf.text(`University/College: ${school || "N/A"}`, 10, 60);
-    pdf.text("Work Experience:", 10, 70);
-    pdf.text(workExperience || "N/A", 10, 80);
-    pdf.text("Skills:", 10, 100);
-    pdf.text(skills || "N/A", 10, 110);
+// Function to download the PDF
+document.getElementById("downloadBtn").addEventListener("click", function () {
+    if (!pdfDoc) {
+        alert("Please generate the resume first!");
+        return;
+    }
 
-    // Convert the PDF to base64
-    const pdfBase64 = pdf.output("datauristring").split(",")[1];
-
-    // Prepare EmailJS parameters
-    const emailParams = {
-        from_name: fullName,
-        to_name: fullName,
-        to_email: email,
-        message: "Please find your resume attached.",
-        attachment: pdfBase64,
-    };
-
-    // Send email with EmailJS
-    emailjs
-        .send("service_qc4k4xu", "template_f3kr9s8", emailParams)
-        .then(
-            function () {
-                alert("Resume sent successfully!");
-            },
-            function (error) {
-                console.error("Error sending email:", error);
-                alert("Failed to send the resume. Please try again.");
-            }
-        );
-}
+    // Trigger the download
+    pdfDoc.save("Resume.pdf");
+});
